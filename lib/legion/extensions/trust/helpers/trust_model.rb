@@ -39,7 +39,7 @@ module Legion
           end
 
           def clamp(value, min = 0.0, max = 1.0)
-            [[value, min].max, max].min
+            value.clamp(min, max)
           end
         end
       end
