@@ -26,7 +26,7 @@ RSpec.describe Legion::Extensions::Trust::Runners::Trust do
 
     it 'asymmetric: penalty > reinforcement' do
       client.record_trust_interaction(agent_id: 'agent-1', positive: true)
-      after_positive = client.get_trust(agent_id: 'agent-1')[:trust][:composite]
+      client.get_trust(agent_id: 'agent-1')[:trust][:composite]
 
       client.record_trust_interaction(agent_id: 'agent-1', positive: false)
       after_negative = client.get_trust(agent_id: 'agent-1')[:trust][:composite]
@@ -49,7 +49,7 @@ RSpec.describe Legion::Extensions::Trust::Runners::Trust do
   describe '#reinforce_trust_dimension' do
     it 'reinforces specific dimension' do
       client.record_trust_interaction(agent_id: 'agent-1', positive: true)
-      result = client.reinforce_trust_dimension(agent_id: 'agent-1', dimension: :competence, amount: 0.2)
+      client.reinforce_trust_dimension(agent_id: 'agent-1', dimension: :competence, amount: 0.2)
       entry = client.get_trust(agent_id: 'agent-1')[:trust]
       expect(entry[:dimensions][:competence]).to be > entry[:dimensions][:reliability]
     end

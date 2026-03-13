@@ -17,18 +17,18 @@ module Legion
             end
           end
 
-          def record_trust_interaction(agent_id:, domain: :general, positive:, **)
+          def record_trust_interaction(agent_id:, positive:, domain: :general, **)
             entry = trust_map.record_interaction(agent_id, domain: domain, positive: positive)
             {
-              agent_id:  agent_id,
-              domain:    domain,
-              positive:  positive,
-              composite: entry[:composite],
+              agent_id:     agent_id,
+              domain:       domain,
+              positive:     positive,
+              composite:    entry[:composite],
               interactions: entry[:interaction_count]
             }
           end
 
-          def reinforce_trust_dimension(agent_id:, domain: :general, dimension:, amount: nil, **)
+          def reinforce_trust_dimension(agent_id:, dimension:, domain: :general, amount: nil, **)
             amt = amount || Helpers::TrustModel::TRUST_REINFORCEMENT
             trust_map.reinforce_dimension(agent_id, domain: domain, dimension: dimension, amount: amt)
             entry = trust_map.get(agent_id, domain: domain)

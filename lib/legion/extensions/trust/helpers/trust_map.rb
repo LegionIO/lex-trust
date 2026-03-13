@@ -19,7 +19,7 @@ module Legion
             @entries[key(agent_id, domain)] ||= TrustModel.new_trust_entry(agent_id: agent_id, domain: domain)
           end
 
-          def record_interaction(agent_id, domain: :general, positive:)
+          def record_interaction(agent_id, positive:, domain: :general)
             entry = get_or_create(agent_id, domain: domain)
             entry[:interaction_count] += 1
             entry[:last_interaction] = Time.now.utc
@@ -40,7 +40,7 @@ module Legion
             entry
           end
 
-          def reinforce_dimension(agent_id, domain: :general, dimension:, amount: TrustModel::TRUST_REINFORCEMENT)
+          def reinforce_dimension(agent_id, dimension:, domain: :general, amount: TrustModel::TRUST_REINFORCEMENT)
             entry = get_or_create(agent_id, domain: domain)
             return unless TrustModel::TRUST_DIMENSIONS.include?(dimension)
 

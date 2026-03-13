@@ -20,15 +20,15 @@ module Legion
 
           def new_trust_entry(agent_id:, domain: :general)
             {
-              agent_id:         agent_id,
-              domain:           domain,
-              dimensions:       TRUST_DIMENSIONS.to_h { |d| [d, NEUTRAL_TRUST] },
-              composite:        NEUTRAL_TRUST,
+              agent_id:          agent_id,
+              domain:            domain,
+              dimensions:        TRUST_DIMENSIONS.to_h { |d| [d, NEUTRAL_TRUST] },
+              composite:         NEUTRAL_TRUST,
               interaction_count: 0,
-              positive_count:   0,
-              negative_count:   0,
-              last_interaction: nil,
-              created_at:       Time.now.utc
+              positive_count:    0,
+              negative_count:    0,
+              last_interaction:  nil,
+              created_at:        Time.now.utc
             }
           end
 
