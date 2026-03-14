@@ -27,6 +27,8 @@ lib/legion/extensions/trust/
   runners/
     trust.rb        # get_trust, record_trust_interaction, reinforce_trust_dimension,
                     # decay_trust, trusted_agents, delegatable_agents, trust_status
+  actors/
+    decay.rb        # Every 300s actor - calls decay_trust to apply passive decay to all entries
 spec/
   legion/extensions/trust/
     runners/
@@ -75,3 +77,4 @@ Entries are stored as `"#{agent_id}:#{domain}"`. The `get_or_create` method uses
 - Trust entries are created lazily via `get_or_create` — calling `get_trust` for an unknown agent returns `{ found: false }` without creating an entry
 - The `min_trust:` parameter in `trusted_agents` defaults to `TRUST_CONSIDER_THRESHOLD`
 - `delegatable_agents` is just `trusted_agents` with `min_trust: TRUST_DELEGATE_THRESHOLD`
+- The `Decay` actor runs automatically every 300s — callers do not need to schedule `decay_trust` manually when running within the Legion runtime
