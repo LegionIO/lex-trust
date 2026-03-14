@@ -21,7 +21,9 @@ module Legion
 
           def record_trust_interaction(agent_id:, positive:, domain: :general, **)
             entry = trust_map.record_interaction(agent_id, domain: domain, positive: positive)
-            Legion::Logging.info "[trust] interaction: agent=#{agent_id} domain=#{domain} positive=#{positive} composite=#{entry[:composite].round(2)} total=#{entry[:interaction_count]}"
+            msg = "[trust] interaction: agent=#{agent_id} domain=#{domain} positive=#{positive} " \
+                  "composite=#{entry[:composite].round(2)} total=#{entry[:interaction_count]}"
+            Legion::Logging.info msg
             {
               agent_id:     agent_id,
               domain:       domain,
