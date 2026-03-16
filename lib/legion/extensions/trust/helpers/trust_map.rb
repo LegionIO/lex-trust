@@ -9,6 +9,7 @@ module Legion
 
           def initialize
             @entries = {} # key: "agent_id:domain"
+            load_from_local
           end
 
           def get(agent_id, domain: :general)
@@ -73,6 +74,74 @@ module Legion
 
           def count
             @entries.size
+          end
+
+          def save_to_local
+            return unless defined?(Legion::Data::Local) && Legion::Data::Local.connected?
+
+            dataset = Legion::Data::Local.connection[:trust_entries]
+
+            @entries.each_value do |entry|
+              row = {
+                agent_id:          entry[:agent_id].to_s,
+                domain:            entry[:domain].to_s,
+                reliability:       entry[:dimensions][:reliability],
+                competence:        entry[:dimensions][:competence],
+                integrity:         entry[:dimensions][:integrity],
+                benevolence:       entry[:dimensions][:benevolence],
+                composite:         entry[:composite],
+                interaction_count: entry[:interaction_count],
+                positive_count:    entry[:positive_count],
+                negative_count:    entry[:negative_count],
+                last_interaction:  entry[:last_interaction],
+                created_at:        entry[:created_at]
+              }
+              existing = dataset.where(agent_id: row[:agent_id], domain: row[:domain]).first
+              if existing
+                dataset.where(agent_id: row[:agent_id], domain: row[:domain])
+                        .update(row.reject { |k, _| k == :agent_id || k == :domain })
+              else
+                dataset.insert(row)
+              end
+            end
+
+            # Remove DB rows for entries no longer in memory
+            memory_pairs = @entries.values.map { |e| [e[:agent_id].to_s, e[:domain].to_s] }
+            dataset.each do |row|
+              pair = [row[:agent_id], row[:domain]]
+              dataset.where(agent_id: pair[0], domain: pair[1]).delete unless memory_pairs.include?(pair)
+            end
+          rescue StandardError => e
+            Legion::Logging.warn "[trust] save_to_local failed: #{e.message}" if defined?(Legion::Logging)
+          end
+
+          def load_from_local
+            return unless defined?(Legion::Data::Local) && Legion::Data::Local.connected?
+
+            Legion::Data::Local.connection[:trust_entries].each do |row|
+              agent_id   = row[:agent_id]
+              domain_str = row[:domain]
+              domain_val = domain_str.to_sym
+              entry_key  = "#{agent_id}:#{domain_str}"
+              @entries[entry_key] = {
+                agent_id:          agent_id,
+                domain:            domain_val,
+                dimensions:        {
+                  reliability: row[:reliability].to_f,
+                  competence:  row[:competence].to_f,
+                  integrity:   row[:integrity].to_f,
+                  benevolence: row[:benevolence].to_f
+                },
+                composite:         row[:composite].to_f,
+                interaction_count: row[:interaction_count].to_i,
+                positive_count:    row[:positive_count].to_i,
+                negative_count:    row[:negative_count].to_i,
+                last_interaction:  row[:last_interaction],
+                created_at:        row[:created_at]
+              }
+            end
+          rescue StandardError => e
+            Legion::Logging.warn "[trust] load_from_local failed: #{e.message}" if defined?(Legion::Logging)
           end
 
           private

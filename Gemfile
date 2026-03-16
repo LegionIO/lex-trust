@@ -8,4 +8,5 @@ gem 'rspec', '~> 3.13'
 gem 'rubocop', '~> 1.75', require: false
 gem 'rubocop-rspec', require: false
 
-gem 'legion-gaia', path: '../../legion-gaia'
+gem 'sequel', '>= 5.70'
+gem 'sqlite3', '>= 2.0'
