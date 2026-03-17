@@ -99,7 +99,7 @@ module Legion
               existing = dataset.where(agent_id: row[:agent_id], domain: row[:domain]).first
               if existing
                 dataset.where(agent_id: row[:agent_id], domain: row[:domain])
-                        .update(row.reject { |k, _| k == :agent_id || k == :domain })
+                       .update(row.except(:agent_id, :domain))
               else
                 dataset.insert(row)
               end

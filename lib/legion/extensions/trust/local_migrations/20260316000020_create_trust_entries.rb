@@ -16,7 +16,7 @@ Sequel.migration do
       Integer :negative_count, default: 0
       DateTime :last_interaction
       DateTime :created_at, null: false
-      unique [:agent_id, :domain]
+      unique %i[agent_id domain]
       index [:agent_id]
     end
   end
